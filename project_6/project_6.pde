@@ -12,7 +12,6 @@ float scroll = 0;
 
 float gravity = 80;
 
-
 // A list we'll use to track fixed objects
 ArrayList<Boundary> boundaries;
 // A list for all of our popcorns
@@ -186,8 +185,3 @@ void createPopcorn(Vec2 position, Vec2 velocity) {
   popcorns.add(p);
   p.body.setLinearVelocity(velocity);
 }
-//void createBox(Vec2 position, Vec2 velocity) {
-//  Box p = new Box(position.x, position.y);
-//  boxes.add(p);
-//  p.body.setLinearVelocity(velocity);
-//}
