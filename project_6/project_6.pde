@@ -18,19 +18,27 @@ ArrayList<Boundary> boundaries;
 // A list for all of our popcorns
 ArrayList<Popcorn> popcorns;
 // for buildings and clouds
-float last = 0;
-ArrayList<Buildings> build = new ArrayList<Buildings>();
-PImage[] buildings =new PImage[11];
-PImage[] clouds= new PImage[2];
+ArrayList<Building> buildings = new ArrayList<Building>();
 
+// Assets
+PImage[] buildingImages =new PImage[11];
+PImage[] cloudImages= new PImage[2];
 
 Player player;
 
-PImage backgroundImage;
+PImage theaterImage;
 
 void setup() {
   size(1024, 748);
-  backgroundImage = loadImage("Game-Theater-01.png");
+
+  //load assets
+  theaterImage = loadImage("Game-Theater-01.png");
+  for (int i=0; i<11; i++) {
+    String name="buildings-"+nf(i+1, 2)+".png";
+    buildingImages[i]=loadImage(name);
+  }
+  cloudImages[0]=loadImage("clouds-12.png");
+  cloudImages[1]=loadImage("clouds-13.png");
 
   // Initialize box2d physics and create the world
   box2d = new Box2DProcessing(this);
@@ -48,22 +56,14 @@ void setup() {
   // Add a bunch of fixed boundaries
   boundaries.add(new Boundary(width/2, 5, width, 10));
   boundaries.add(new Boundary(width/2, height-5, width, 10));
-
-  //load buildings
-  for (int i=0; i<11; i++) {
-    String name="buildings-"+nf(i+1, 2)+".png";
-    buildings[i]=loadImage(name);
-  }
-  clouds[0]=loadImage("clouds-12.png");
-  clouds[1]=loadImage("clouds-13.png");
 }
 
 void draw() {
   background(#7FC895);
- 
-  buildBuild();
-  createClouds();
-  image(backgroundImage, 0, 0, 1024, 748);
+
+  drawBuilding();
+  drawClouds();
+  image(theaterImage, 0, 0, 1024, 748);
 
   // We must always step through time!
   box2d.step();
@@ -83,9 +83,6 @@ void draw() {
     float vy = (delta.y-0.5*(-wg)*t*t)/t;
 
     delta.normalize();
-    Vec2 nd = delta.mul(75);
-
-    //createBox(position, nd);
     createPopcorn(position.sub(new Vec2(0, 0)), new Vec2(vx, box2d.scalarPixelsToWorld(vy)));
   }
 
@@ -117,22 +114,19 @@ void keyPressed() {
   }
 }
 
-//Background Buildings
-void createBuilding() {
-  PVector location = new PVector (width, 80);
-
-  build.add(new Buildings(location, buildings[(int(random(0, 11)))]));
-}
-
-
-void buildBuild() {
-  float interval = random(1500, 1800);
-  if (last+interval < millis()) {
-    createBuilding();
-    last = millis();
+void drawBuilding() {
+  float distance = random(40, 120);
+  float lastLocationRight = 0;
+  if (!buildings.isEmpty()) {
+    Building lastBuilding = buildings.get(buildings.size()-1);
+    lastLocationRight = lastBuilding.location.x+lastBuilding.buildingWidth;
   }
-  ArrayList<Buildings> toBeRemoved = new ArrayList<Buildings>();
-  for (Buildings b : build) {
+  if (lastLocationRight+distance < width) {
+    PVector location = new PVector (width, 80);
+    buildings.add(new Building(location, buildingImages[(int(random(0, 11)))]));
+  }
+  ArrayList<Building> toBeRemoved = new ArrayList<Building>();
+  for (Building b : buildings) {
     b.display();
     b.update();
 
@@ -140,21 +134,20 @@ void buildBuild() {
       toBeRemoved.add(b);
     }
   }
-  build.removeAll(toBeRemoved);
+  buildings.removeAll(toBeRemoved);
 }
 
 //Create Clouds
-void createClouds() {
+void drawClouds() {
   float x=width;
   float v=1;
-  image(clouds[0],x,100,160,100);
-  image(clouds[1],x+random(500,1000),100,150,200);
+  image(cloudImages[0], x, 100, 160, 100);
+  image(cloudImages[1], x+random(500, 1000), 100, 150, 200);
   x=x-v;
-  
-  if(x<-200){
+
+  if (x<-200) {
     x=width;
   }
-  
 }
 
 

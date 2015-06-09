@@ -1,19 +1,17 @@
-class Buildings {
+class Building {
   PVector location;
   float speed = 2;
   float speedC = 1;
   PImage p;
+  float buildingWidth = 102;
 
-
-  Buildings(PVector loc, PImage bp) {
+  Building(PVector loc, PImage bp) {
     location = loc;
     p = bp;
   }
 
-
   void display() {
-
-    image(p, location.x, location.y, 102, 542);
+    image(p, location.x, location.y, buildingWidth, 542);
   }
 
   void update() {
