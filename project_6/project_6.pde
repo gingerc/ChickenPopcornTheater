@@ -138,20 +138,19 @@ void drawBuilding() {
 }
 
 //Create Clouds
+float x = 0;
 void drawClouds() {
-  float x=width;
   float v=1;
   image(cloudImages[0], x, 100, 160, 100);
-  image(cloudImages[1], x+random(500, 1000), 100, 150, 200);
+  image(cloudImages[1], x+500, 100, 150, 200);
   x=x-v;
 
-  if (x<-200) {
+  if (x<-200-500) {
     x=width;
   }
 }
 
-
-
+// Collision
 void beginContact(Contact cp) {
   // Get both fixtures
   Fixture f1 = cp.getFixtureA();
