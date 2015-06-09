@@ -30,7 +30,7 @@ PImage backgroundImage;
 
 void setup() {
   size(1024, 748);
-  backgroundImage = loadImage("Game-Theater.png");
+  backgroundImage = loadImage("Game-Theater-01.png");
 
   // Initialize box2d physics and create the world
   box2d = new Box2DProcessing(this);
