@@ -112,6 +112,7 @@ void draw() {
         p.applyForce(wind);
       }
     }
+
     if (random(1) < 0.05) {
       Vec2 position = new Vec2(width/3*2, height/2);  //where popcorns come from
       Vec2 playerPosition = box2d.getBodyPixelCoord(player.body);
@@ -126,10 +127,11 @@ void draw() {
 
       dis.normalize();
       createPopcorn(position.sub(new Vec2(0, 0)), new Vec2(vx, box2d.scalarPixelsToWorld(vy)));
+    }
 
-      if (playerPosition.x <-100 || playerPosition.y > 650) {
-        scene = 3;
-      }
+    Vec2 playerPosition = box2d.getBodyPixelCoord(player.body);
+    if (playerPosition.x <-100 || playerPosition.y > 650) {
+      scene = 3;
     }
 
     player.display();
@@ -160,7 +162,6 @@ void draw() {
     image(wings[frames], 10, 300,270,230);
   }
 }
-
 
 void keyPressed() {
   if (key == ' ') {
@@ -198,7 +199,7 @@ void mouseClicked() {
       buildings.removeAll(buildings);
     }
   }
-  
+
   if (lastScene != scene && scene == 2) {
     player.body.setTransform(box2d.coordPixelsToWorld(startPosition), 0);
   }
@@ -212,7 +213,6 @@ void endScreen() {
   //  fill(0);
   //  text(score, 490, 240);
 }
-
 
 void drawBuilding() {
   float distance = random(0, 100);
@@ -278,8 +278,6 @@ void beginContact(Contact cp) {
 // Objects stop touching each other
 void endContact(Contact cp) {
 }
-
-
 
 void createPopcorn(Vec2 position, Vec2 velocity) {
   Popcorn p = new Popcorn(position.x, position.y);
