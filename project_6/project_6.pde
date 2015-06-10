@@ -1,4 +1,4 @@
-import processing.sound.*; //<>// //<>// //<>// //<>//
+import processing.sound.*; //<>// //<>// //<>// //<>// //<>//
 AudioIn in;
 Amplitude rms;
 
@@ -294,12 +294,8 @@ void hero() {
   if (x2<-6500) {
     x2=width+200;
   }
-  if (x1>100) {
+  if (x1>3000) {
     image(superhero[2], width/3*2-90, y, 190, 211);
-    y = y+speed;
-    if (y<300 || y>400) {
-     yspeed= yspeed*-1;
-   }
   }
 }
 
