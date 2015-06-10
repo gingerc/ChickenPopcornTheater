@@ -31,6 +31,8 @@ ArrayList<Building> buildings = new ArrayList<Building>();
 // Assets
 PImage[] buildingImages =new PImage[11];
 PImage[] cloudImages= new PImage[2];
+PImage[] wings=new PImage[18];
+int frames;
 
 Player player;
 Vec2 startPosition =new Vec2(400, 300);
@@ -58,6 +60,11 @@ void setup() {
   }
   cloudImages[0]=loadImage("clouds-12.png");
   cloudImages[1]=loadImage("clouds-13.png");
+  for (int i=0; i<18; i++) {
+    String name="wing-"+nf(i+1, 2)+".png";
+    wings[i]=loadImage(name);
+  }
+
 
   // Initialize box2d physics and create the world
   box2d = new Box2DProcessing(this);
@@ -85,6 +92,11 @@ void draw() {
 
   if (scene == 0) {
     image(start, 0, 0, 1024, 748);
+    frames++;
+    if (frames==18) {
+      frames=0;
+    }
+    image(wings[frames], 30, 300,220,200);
   } else if (scene == 1) {
     image(howtoplay, 0, 0, 1024, 748);
   } else if (scene ==2) {
@@ -99,14 +111,12 @@ void draw() {
         Vec2 wind = new Vec2(1000, 0);
         p.applyForce(wind);
       }
-      
     }
     if (random(1) < 0.05) {
       Vec2 position = new Vec2(width/3*2, height/2);  //where popcorns come from
       Vec2 playerPosition = box2d.getBodyPixelCoord(player.body);
       Vec2 dis = playerPosition.sub(position);
       dis = new Vec2(dis.x, -dis.y);
-
       // corrected
       float vx = -75;
       float wvx = box2d.scalarWorldToPixels(vx);
@@ -143,6 +153,11 @@ void draw() {
     }
   } else if (scene == 3 ) {
     endScreen();
+    frames++;
+    if (frames==18) {
+      frames=0;
+    }
+    image(wings[frames], 10, 300,270,230);
   }
 }
 

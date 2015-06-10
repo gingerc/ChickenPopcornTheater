@@ -25,16 +25,21 @@ class Player {
       imageMode(CENTER);
       pushMatrix();
       translate(pos.x, pos.y);
-      rotate(-a);
+      //rotate(-a);
       image(chicken1, 0, 0);
       popMatrix();
       popStyle();
+      frames++;
+      if (frames==18) {
+        frames=0;
+      }
+      image(wings[frames], pos.x-55, pos.y-20, 70, 60);
     } else if (superState == true) {
       pushStyle();
       imageMode(CENTER);
       pushMatrix();
       translate(pos.x, pos.y);
-      image(superChicken, 0, 0,200,206);
+      image(superChicken, 0, 0, 200, 206);
       popMatrix();
       popStyle();
     }
@@ -43,12 +48,11 @@ class Player {
   void jump() {
     Vec2 currentVelocity = body.getLinearVelocity();
     body.setLinearVelocity(new Vec2(currentVelocity.x, gravity/3*2));
-    
+
     superState = rms.analyze()>0.1;
   }
 
   void transform() {
-    
   }
 
 
