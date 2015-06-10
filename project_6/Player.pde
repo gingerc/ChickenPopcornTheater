@@ -20,11 +20,13 @@ class Player {
     // Get its angle of rotation
     float a = body.getAngle();
     constrain(a, -30, 60);
-    
+
     // position constrain
     float newX = pos.x;
     if (superState) {
       newX+=2;
+      Vec2 currentVelocity = body.getLinearVelocity();
+      body.setLinearVelocity(new Vec2(0, currentVelocity.y));
     }
     Vec2 maxPos = new Vec2(min(newX, width/2), pos.y);
     player.body.setTransform(box2d.coordPixelsToWorld(maxPos), 0);
@@ -73,7 +75,7 @@ class Player {
     FixtureDef fd = new FixtureDef();
     fd.shape = shape;
     // Parameters that affect physics
-    fd.density = 100;
+    fd.density = 10;
     fd.friction = 0.3;
     fd.restitution = 0.5;
 
