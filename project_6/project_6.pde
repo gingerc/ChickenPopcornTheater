@@ -41,7 +41,7 @@ Vec2 startPosition =new Vec2(400, 300);
 void setup() {
   size(1024, 748);
 
-  A = createFont("HITCHCOCK.bmap", 60);
+  A = createFont("Hitchcock.ttf", 60);
   textFont(A);
 
   //Audio Input
@@ -135,6 +135,7 @@ void draw() {
 
     Vec2 playerPosition = box2d.getBodyPixelCoord(player.body);
     if (playerPosition.x <-100 || playerPosition.y > 650) {
+      lastScore=time();
       scene = 3;
     }
 
@@ -157,6 +158,10 @@ void draw() {
         popcorns.remove(i);
       }
     }
+    fill(255);
+    textSize(20);
+    textFont(A);
+    text(time(), 30, 140);
   } else if (scene == 3 ) {
     endScreen();
     frames++;
@@ -213,9 +218,9 @@ int lastScore = 0;
 void endScreen() {
   cursor();
   image(end, 0, 0, 1024, 748);
-  // String score = String.format("%.1f", lastScore);
-  //  fill(0);
-  //  text(score, 490, 240);
+  fill(#2A3553);
+  textSize(120);
+  text(lastScore, 490, 300);
 }
 
 void drawBuilding() {
@@ -278,12 +283,16 @@ void beginContact(Contact cp) {
     p2.change();
   }
 }
+
+void endContact(Contact cp) {
+}
+
 float x1=-500;
 float x2=width+1500;
 float y= 350;
 void hero() {
   float speed = random(1.5, 3);
-  float yspeed = random(0.5, 1);
+
   image(superhero[0], x1, 100, 311, 330);
   image(superhero[1], x2, 150, 311, 330);
   x1 =x1+speed;
@@ -303,4 +312,8 @@ void createPopcorn(Vec2 position, Vec2 velocity) {
   Popcorn p = new Popcorn(position.x, position.y);
   popcorns.add(p);
   p.body.setLinearVelocity(velocity);
+}
+
+int time() {
+  return int((millis()-lastStarted)/2000);
 }
