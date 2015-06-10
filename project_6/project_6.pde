@@ -1,3 +1,6 @@
+import processing.sound.*; //<>//
+AudioIn in;
+Amplitude rms;
 
 import shiffman.box2d.*;
 import org.jbox2d.collision.shapes.*;
@@ -8,7 +11,14 @@ import org.jbox2d.dynamics.contacts.*;
 // A reference to our box2d world
 Box2DProcessing box2d;
 
+PFont A;
+PImage start;
+PImage howtoplay;
+PImage end;
+PImage theaterImage;
 float scroll = 0;
+int scene =0;
+float lastStarted = 0;
 
 float gravity = 80;
 
@@ -18,19 +28,29 @@ ArrayList<Boundary> boundaries;
 ArrayList<Popcorn> popcorns;
 // for buildings and clouds
 ArrayList<Building> buildings = new ArrayList<Building>();
-
 // Assets
 PImage[] buildingImages =new PImage[11];
 PImage[] cloudImages= new PImage[2];
 
 Player player;
-
-PImage theaterImage;
+Vec2 startPosition =new Vec2(400, 300);
 
 void setup() {
   size(1024, 748);
 
+  A = createFont("HITCHCOCK.bmap", 60);
+  textFont(A);
+
+  //Audio Input
+  in=new AudioIn(this, 0);
+  in.start();
+  rms=new Amplitude(this);
+  rms.input(in);
+
   //load assets
+  start=loadImage("screens-06.png");
+  howtoplay=loadImage("screens-08.png");
+  end=loadImage("screens-07.png");
   theaterImage = loadImage("Game-Theater-01.png");
   for (int i=0; i<11; i++) {
     String name="buildings-"+nf(i+1, 2)+".png";
@@ -46,7 +66,7 @@ void setup() {
   box2d.setGravity(0, -gravity);
   box2d.listenForCollisions();
 
-  player = new Player(400, 100);
+  player = new Player(400, 200);
 
   // Create ArrayLists  
   popcorns = new ArrayList<Popcorn>();
@@ -60,52 +80,72 @@ void setup() {
 void draw() {
   background(#7FC895);
 
-  drawBuilding();
-  drawClouds();
-  image(theaterImage, 0, 0, 1024, 748);
-
   // We must always step through time!
   box2d.step();
 
-  if (random(1) < 0.05) {
-    Vec2 position = new Vec2(width/3*2, height/2);
-    Vec2 playerPosition = box2d.getBodyPixelCoord(player.body);
+  if (scene == 0) {
+    image(start, 0, 0, 1024, 748);
+  } else if (scene == 1) {
+    image(howtoplay, 0, 0, 1024, 748);
+  } else if (scene ==2) {
+    noCursor();
+    drawBuilding();
+    drawClouds();
+    image(theaterImage, 0, 0, 1024, 748);
 
-    Vec2 delta = playerPosition.sub(position);
-    delta = new Vec2(delta.x, -delta.y);
 
-    // corrected
-    float vx = -75;
-    float wvx = box2d.scalarWorldToPixels(vx);
-    float wg = box2d.scalarWorldToPixels(gravity);
-    float t = abs((delta.x)/wvx);
-    float vy = (delta.y-0.5*(-wg)*t*t)/t;
-
-    delta.normalize();
-    createPopcorn(position.sub(new Vec2(0, 0)), new Vec2(vx, box2d.scalarPixelsToWorld(vy)));
-  }
-
-  player.display();
-
-  // Display all the boundaries
-  for (Boundary wall : boundaries) {
-    wall.display();
-  }
-
-  // Display all the boxes
-  for (Popcorn b : popcorns) {
-    b.display();
-  }
-
-  // Boxes that leave the screen, we delete them
-  // (note they have to be deleted from both the box2d world and our list
-  for (int i = popcorns.size()-1; i >= 0; i--) {
-    Popcorn b = popcorns.get(i);
-    if (b.done()) {
-      popcorns.remove(i);
+    if (rms.analyze()>0.1) {
+      for (Popcorn p : popcorns) {
+        Vec2 wind = new Vec2(1000, 0);
+        p.applyForce(wind);
+      }
+      
     }
+    if (random(1) < 0.05) {
+      Vec2 position = new Vec2(width/3*2, height/2);  //where popcorns come from
+      Vec2 playerPosition = box2d.getBodyPixelCoord(player.body);
+      Vec2 dis = playerPosition.sub(position);
+      dis = new Vec2(dis.x, -dis.y);
+
+      // corrected
+      float vx = -75;
+      float wvx = box2d.scalarWorldToPixels(vx);
+      float wg = box2d.scalarWorldToPixels(gravity);
+      float t = abs((dis.x)/wvx);
+      float vy = (dis.y-0.5*(-wg)*t*t)/t;
+
+      dis.normalize();
+      createPopcorn(position.sub(new Vec2(0, 0)), new Vec2(vx, box2d.scalarPixelsToWorld(vy)));
+
+      if (playerPosition.x <-100 || playerPosition.y > 650) {
+        scene = 3;
+      }
+    }
+
+    player.display();
+
+    // Display all the boundaries
+    for (Boundary wall : boundaries) {
+      wall.display();
+    }
+
+    // Display all the popcorns
+    for (Popcorn b : popcorns) {
+      b.display();
+    }
+
+    // Delete off screen popcorns
+    for (int i = popcorns.size()-1; i >= 0; i--) {
+      Popcorn b = popcorns.get(i);
+      if (b.done()) {
+        popcorns.remove(i);
+      }
+    }
+  } else if (scene == 3 ) {
+    endScreen();
   }
 }
+
 
 void keyPressed() {
   if (key == ' ') {
@@ -113,8 +153,49 @@ void keyPressed() {
   }
 }
 
+void mouseClicked() {
+  Boolean next = false;
+  if (scene == 0) {
+    if (mouseX> 465 && mouseX <677 && mouseY >398 && mouseY < 501) {
+      scene = 2;
+      lastStarted = millis();
+    }
+    if (mouseX> 722 && mouseX <925 && mouseY >398 && mouseY < 501) {
+      scene=1;
+    }
+  } else if (scene == 1) {
+    if (mouseX> 856 && mouseX <996 && mouseY >29 && mouseY < 163) {
+      scene = 2;
+      lastStarted = millis();
+    }
+  } else if (scene == 2) {
+  } else if (scene == 3) {
+    next = (mouseX> 388 && mouseX <685 && mouseY >417 && mouseY < 521);
+  }
+
+  if (next == true) {
+    scene ++;
+    if (scene == 4) {
+      scene = 2;
+      lastStarted = millis();
+      popcorns.removeAll(popcorns);
+      buildings.removeAll(buildings);
+    }
+  }
+}
+
+int lastScore = 0;
+void endScreen() {
+  cursor();
+  image(end, 0, 0, 1024, 748);
+  // String score = String.format("%.1f", lastScore);
+  //  fill(0);
+  //  text(score, 490, 240);
+}
+
+
 void drawBuilding() {
-  float distance = random(40, 120);
+  float distance = random(0, 100);
   float lastLocationRight = 0;
   if (!buildings.isEmpty()) {
     Building lastBuilding = buildings.get(buildings.size()-1);
@@ -137,14 +218,14 @@ void drawBuilding() {
 }
 
 //Create Clouds
-float x = 0;
+float x = 100;
 void drawClouds() {
   float v=1;
-  image(cloudImages[0], x, 100, 160, 100);
-  image(cloudImages[1], x+500, 100, 150, 200);
+  image(cloudImages[0], x, 100, 350, 300);
+  image(cloudImages[1], x+500, 100, 400, 300);
   x=x-v;
 
-  if (x<-200-500) {
+  if (x<-800) {
     x=width;
   }
 }

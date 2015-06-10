@@ -86,4 +86,9 @@ class Popcorn {
 
     body.setUserData(this);
   }
+  
+  void applyForce(Vec2 force) {
+    Vec2 pos = body.getWorldCenter();
+    body.applyForce(force, pos);
+  }
 }
