@@ -1,4 +1,4 @@
-import processing.sound.*; //<>// //<>//
+import processing.sound.*; //<>// //<>// //<>//
 AudioIn in;
 Amplitude rms;
 
@@ -32,6 +32,7 @@ ArrayList<Building> buildings = new ArrayList<Building>();
 PImage[] buildingImages =new PImage[11];
 PImage[] cloudImages= new PImage[2];
 PImage[] wings=new PImage[18];
+PImage[] superhero=new PImage[3];
 int frames;
 
 Player player;
@@ -64,6 +65,9 @@ void setup() {
     String name="wing-"+nf(i+1, 2)+".png";
     wings[i]=loadImage(name);
   }
+  superhero[0]=loadImage("superhero-01.png");
+  superhero[1]=loadImage("superhero-02.png");
+  superhero[2]=loadImage("superhero-03.png");
 
 
   // Initialize box2d physics and create the world
@@ -275,8 +279,15 @@ void beginContact(Contact cp) {
   }
 }
 
-// Objects stop touching each other
-void endContact(Contact cp) {
+void hero(){
+  float speed = 1.5;
+  float x1=0;
+  float x2=width;
+  image(superhero[0],x1,100,288,155);
+  image(superhero[1],x2,100,288,155);
+  x1 =x1+speed;
+  x2 = x2-speed;
+  
 }
 
 void createPopcorn(Vec2 position, Vec2 velocity) {
