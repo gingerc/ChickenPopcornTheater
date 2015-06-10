@@ -118,19 +118,27 @@ void draw() {
     }
     hero();
     if (random(1) < 0.05) {
-      Vec2 position = new Vec2(width/3*2, height/2);  //where popcorns come from
+      Vec2 position = new Vec2(width/3*2, height/2); //where popcorns come from
+      Vec2 batPosition = new Vec2(batmanx,batmany);
       Vec2 playerPosition = box2d.getBodyPixelCoord(player.body);
       Vec2 dis = playerPosition.sub(position);
+      Vec2 dis2 = playerPosition.sub(batPosition);
       dis = new Vec2(dis.x, -dis.y);
+      dis2 = new Vec2(dis2.x, -dis2.y);
+      
       // corrected
       float vx = -75;
       float wvx = box2d.scalarWorldToPixels(vx);
       float wg = box2d.scalarWorldToPixels(gravity);
       float t = abs((dis.x)/wvx);
       float vy = (dis.y-0.5*(-wg)*t*t)/t;
+      float t2 = abs((dis2.x)/wvx);
+      float vy2 = (dis2.y-0.5*(-wg)*t2*t2)/t2;
 
       dis.normalize();
+      dis2.normalize();
       createPopcorn(position.sub(new Vec2(0, 0)), new Vec2(vx, box2d.scalarPixelsToWorld(vy)));
+      createPopcorn(batPosition.sub(new Vec2(0, 0)), new Vec2(vx, box2d.scalarPixelsToWorld(vy2)));
     }
 
     Vec2 playerPosition = box2d.getBodyPixelCoord(player.body);
@@ -206,6 +214,8 @@ void mouseClicked() {
       lastStarted = millis();
       popcorns.removeAll(popcorns);
       buildings.removeAll(buildings);
+      supermanx=-500;
+      batmanx=width+random(1500,2000);
     }
   }
 
@@ -287,23 +297,23 @@ void beginContact(Contact cp) {
 void endContact(Contact cp) {
 }
 
-float x1=-500;
-float x2=width+1500;
+float supermanx=-500;
+float batmanx=width+1500;
+float batmany=150;
 float y= 350;
 void hero() {
   float speed = random(1.5, 3);
-
-  image(superhero[0], x1, 100, 311, 330);
-  image(superhero[1], x2, 150, 311, 330);
-  x1 =x1+speed;
-  x2 = x2-speed;
-  if (x1>4000) {
-    x1=-320;
+  image(superhero[0], supermanx, 100, 311, 330);
+  image(superhero[1], batmanx, batmany, 311, 330);
+  supermanx =supermanx+speed;
+  batmanx = batmanx-speed;
+  if (supermanx>4000) {
+    supermanx=-320;
   }
-  if (x2<-6500) {
-    x2=width+200;
+  if (batmanx<-6500) {
+    batmanx=width+200;
   }
-  if (x1>3000) {
+  if (supermanx>3000) {
     image(superhero[2], width/3*2-90, y, 190, 211);
   }
 }
