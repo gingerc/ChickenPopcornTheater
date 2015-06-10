@@ -105,9 +105,8 @@ void draw() {
     drawClouds();
     image(theaterImage, 0, 0, 1024, 748);
 
-  float threshold = 0.01;
-    player.superState = rms.analyze()>threshold;
-    if (rms.analyze()>threshold) {
+    player.superState = rms.analyze()>0.01;
+    if (player.superState) {
       for (Popcorn p : popcorns) {
         Vec2 wind = new Vec2(50000, 0);
         p.applyForce(wind);

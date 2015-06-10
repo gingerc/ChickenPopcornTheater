@@ -20,6 +20,15 @@ class Player {
     // Get its angle of rotation
     float a = body.getAngle();
     constrain(a, -30, 60);
+    
+    // position constrain
+    float newX = pos.x;
+    if (superState) {
+      newX+=2;
+    }
+    Vec2 maxPos = new Vec2(min(newX, width/2), pos.y);
+    player.body.setTransform(box2d.coordPixelsToWorld(maxPos), 0);
+
     if (superState == false) {
       pushStyle();
       imageMode(CENTER);
@@ -52,8 +61,6 @@ class Player {
 
   void transform() {
   }
-
-
 
   // adds the chicken to the box2d world
   void makeBody(Vec2 center, float w_, float h_) {
