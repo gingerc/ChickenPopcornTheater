@@ -155,6 +155,7 @@ void keyPressed() {
 
 void mouseClicked() {
   Boolean next = false;
+  int lastScene = scene;
   if (scene == 0) {
     if (mouseX> 465 && mouseX <677 && mouseY >398 && mouseY < 501) {
       scene = 2;
@@ -181,6 +182,10 @@ void mouseClicked() {
       popcorns.removeAll(popcorns);
       buildings.removeAll(buildings);
     }
+  }
+  
+  if (lastScene != scene && scene == 2) {
+    player.body.setTransform(box2d.coordPixelsToWorld(startPosition), 0);
   }
 }
 
