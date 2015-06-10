@@ -1,4 +1,4 @@
-import processing.sound.*; //<>//
+import processing.sound.*; //<>// //<>//
 AudioIn in;
 Amplitude rms;
 
@@ -96,7 +96,7 @@ void draw() {
     if (frames==18) {
       frames=0;
     }
-    image(wings[frames], 30, 300,220,200);
+    image(wings[frames], 30, 300, 220, 200);
   } else if (scene == 1) {
     image(howtoplay, 0, 0, 1024, 748);
   } else if (scene ==2) {
@@ -105,10 +105,11 @@ void draw() {
     drawClouds();
     image(theaterImage, 0, 0, 1024, 748);
 
-
-    if (rms.analyze()>0.1) {
+  float threshold = 0.01;
+    player.superState = rms.analyze()>threshold;
+    if (rms.analyze()>threshold) {
       for (Popcorn p : popcorns) {
-        Vec2 wind = new Vec2(1000, 0);
+        Vec2 wind = new Vec2(50000, 0);
         p.applyForce(wind);
       }
     }
@@ -159,7 +160,7 @@ void draw() {
     if (frames==18) {
       frames=0;
     }
-    image(wings[frames], 10, 300,270,230);
+    image(wings[frames], 10, 300, 270, 230);
   }
 }
 

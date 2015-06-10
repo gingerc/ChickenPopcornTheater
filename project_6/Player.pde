@@ -48,8 +48,6 @@ class Player {
   void jump() {
     Vec2 currentVelocity = body.getLinearVelocity();
     body.setLinearVelocity(new Vec2(currentVelocity.x, gravity/3*2));
-
-    superState = rms.analyze()>0.1;
   }
 
   void transform() {
