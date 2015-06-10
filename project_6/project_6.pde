@@ -1,4 +1,4 @@
-import processing.sound.*; //<>// //<>// //<>//
+import processing.sound.*; //<>// //<>// //<>// //<>//
 AudioIn in;
 Amplitude rms;
 
@@ -116,7 +116,7 @@ void draw() {
         p.applyForce(wind);
       }
     }
-
+    hero();
     if (random(1) < 0.05) {
       Vec2 position = new Vec2(width/3*2, height/2);  //where popcorns come from
       Vec2 playerPosition = box2d.getBodyPixelCoord(player.body);
@@ -278,16 +278,29 @@ void beginContact(Contact cp) {
     p2.change();
   }
 }
-
-void hero(){
-  float speed = 1.5;
-  float x1=0;
-  float x2=width;
-  image(superhero[0],x1,100,288,155);
-  image(superhero[1],x2,100,288,155);
+float x1=-500;
+float x2=width+1500;
+float y= 350;
+void hero() {
+  float speed = random(1.5, 3);
+  float yspeed = random(0.5, 1);
+  image(superhero[0], x1, 100, 311, 330);
+  image(superhero[1], x2, 150, 311, 330);
   x1 =x1+speed;
   x2 = x2-speed;
-  
+  if (x1>4000) {
+    x1=-320;
+  }
+  if (x2<-6500) {
+    x2=width+200;
+  }
+  if (x1>100) {
+    image(superhero[2], width/3*2-90, y, 190, 211);
+    y = y+speed;
+    if (y<300 || y>400) {
+     yspeed= yspeed*-1;
+   }
+  }
 }
 
 void createPopcorn(Vec2 position, Vec2 velocity) {
