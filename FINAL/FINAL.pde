@@ -1,6 +1,11 @@
 import processing.sound.*; //<>// //<>// //<>// //<>// //<>//
 AudioIn in;
 Amplitude rms;
+SoundFile startMusic;
+SoundFile gameplayMusic;
+SoundFile endMusic;
+SoundFile windMusic;
+SoundFile hitMusic;
 
 import shiffman.box2d.*;
 import org.jbox2d.collision.shapes.*;
@@ -49,6 +54,12 @@ void setup() {
   in.start();
   rms=new Amplitude(this);
   rms.input(in);
+  //Sound Effects
+  startMusic = new SoundFile(this, "startscreen.wav");
+  gameplayMusic = new SoundFile(this, "gameplay.mp3");
+  endMusic=new SoundFile (this, "fail.wav");
+  windMusic=new SoundFile (this, "wind.wav");
+  hitMusic = new SoundFile (this, "beep.wav");
 
   //load assets
   start=loadImage("screens-06.png");
@@ -86,6 +97,7 @@ void setup() {
   // Add a bunch of fixed boundaries
   boundaries.add(new Boundary(width/2, 5, width, 10));
   boundaries.add(new Boundary(width/2, height-5, width, 10));
+  startMusic.play();
 }
 
 void draw() {
@@ -96,6 +108,7 @@ void draw() {
 
   if (scene == 0) {
     image(start, 0, 0, 1024, 748);
+
     frames++;
     if (frames==18) {
       frames=0;
@@ -104,6 +117,7 @@ void draw() {
   } else if (scene == 1) {
     image(howtoplay, 0, 0, 1024, 748);
   } else if (scene ==2) {
+
     noCursor();
     drawBuilding();
     drawClouds();
@@ -119,13 +133,13 @@ void draw() {
     hero();
     if (random(1) < 0.05) {
       Vec2 position = new Vec2(width/3*2, height/2); //where popcorns come from
-      Vec2 batPosition = new Vec2(batmanx,batmany);
+      Vec2 batPosition = new Vec2(batmanx, batmany);
       Vec2 playerPosition = box2d.getBodyPixelCoord(player.body);
       Vec2 dis = playerPosition.sub(position);
       Vec2 dis2 = playerPosition.sub(batPosition);
       dis = new Vec2(dis.x, -dis.y);
       dis2 = new Vec2(dis2.x, -dis2.y);
-      
+
       // corrected
       float vx = -75;
       float wvx = box2d.scalarWorldToPixels(vx);
@@ -145,6 +159,8 @@ void draw() {
     if (playerPosition.x <-100 || playerPosition.y > 650) {
       lastScore=time();
       scene = 3;
+      gameplayMusic.stop();
+      endMusic.play();
     }
 
     player.display();
@@ -182,7 +198,9 @@ void draw() {
 
 void keyPressed() {
   if (key == ' ') {
+    hitMusic.stop();
     player.jump();
+    hitMusic.play();
   }
 }
 
@@ -190,8 +208,11 @@ void mouseClicked() {
   Boolean next = false;
   int lastScene = scene;
   if (scene == 0) {
+
     if (mouseX> 465 && mouseX <677 && mouseY >398 && mouseY < 501) {
       scene = 2;
+      startMusic.stop();
+      gameplayMusic.play();
       lastStarted = millis();
     }
     if (mouseX> 722 && mouseX <925 && mouseY >398 && mouseY < 501) {
@@ -200,22 +221,30 @@ void mouseClicked() {
   } else if (scene == 1) {
     if (mouseX> 856 && mouseX <996 && mouseY >29 && mouseY < 163) {
       scene = 2;
+      startMusic.stop();
+      gameplayMusic.play();
       lastStarted = millis();
     }
   } else if (scene == 2) {
   } else if (scene == 3) {
-    next = (mouseX> 388 && mouseX <685 && mouseY >417 && mouseY < 521);
+    if (mouseX> 388 && mouseX <685 && mouseY >417 && mouseY < 521) {
+      next = true;
+      endMusic.stop();
+      gameplayMusic.play();
+    }
   }
 
   if (next == true) {
     scene ++;
+
     if (scene == 4) {
+
       scene = 2;
       lastStarted = millis();
       popcorns.removeAll(popcorns);
       buildings.removeAll(buildings);
       supermanx=-500;
-      batmanx=width+random(1500,2000);
+      batmanx=width+random(1500, 2000);
     }
   }
 
