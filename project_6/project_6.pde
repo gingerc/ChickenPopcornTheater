@@ -109,7 +109,7 @@ void draw() {
     drawClouds();
     image(theaterImage, 0, 0, 1024, 748);
 
-    player.superState = rms.analyze()>0.01;
+    player.superState = rms.analyze()>0.08;
     if (player.superState) {
       for (Popcorn p : popcorns) {
         Vec2 wind = new Vec2(50000, 0);

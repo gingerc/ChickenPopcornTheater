@@ -61,8 +61,6 @@ class Player {
     body.setLinearVelocity(new Vec2(currentVelocity.x, gravity/3*2));
   }
 
-  void transform() {
-  }
 
   // adds the chicken to the box2d world
   void makeBody(Vec2 center, float w_, float h_) {
